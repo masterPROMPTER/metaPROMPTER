@@ -1,0 +1,42 @@
+/* generator.collector.css (#dev input preview) */
+#input-preview {
+  margin-top: 1.25rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+#input-preview .input-preview-block + .input-preview-block { margin-top: 1rem; }
+#input-preview .block-title { display: block; margin: 0 0 .5rem; opacity: .75; }
+
+#input-preview .block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .5rem;
+}
+
+/* Textareas */
+#input-preview #input-sectioned,
+#input-preview #input-concatenated,
+#input-preview #input-structured {
+  width: 100%;
+  min-height: 80px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 75%;
+}
+
+/* JSON: dark for easier code review */
+#input-preview #input-structured {
+  background: black;
+  color: white;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Utility */
+.d-none { display: none !important; }
