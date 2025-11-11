@@ -54,8 +54,24 @@
       out.textContent = prompt || 'Please enter details to generate a prompt.';
     });
   }
-
-  // expose
+    try {
+      if (window.PromptGen && typeof window.PromptGen.getCollectedPayload === 'function' && window.PromptAPI && typeof window.PromptAPI.sendJSONToGPT === 'function') {
+        const jsonPayload = window.PromptGen.getCollectedPayload();
+        const outputBox = document.getElementById('gpt-output');
+        if (outputBox) {
+          outputBox.value = 'Contacting GPT...';
+        }
+        window.PromptAPI.sendJSONToGPT(jsonPayload).then(reply => {
+          if (outputBox) outputBox.value = reply;
+        }).catch(err => {
+          if (outputBox) outputBox.value = '⚠️ ' + (err && err.message ? err.message : String(err));
+        });
+      }
+    } catch (e) {
+      const outputBox = document.getElementById('gpt-output');
+      if (outputBox) outputBox.value = '⚠️ ' + (e && e.message ? e.message : String(e));
+    }
+// expose
   root.PromptGen = root.PromptGen || {};
   root.PromptGen.composePrompt = composePrompt;
   root.PromptGen.attachSubmitHandler = attachSubmitHandler;
