@@ -60,49 +60,99 @@
         group.style.display = '';
         const labelEl = group.querySelector('label');
         const inputEl = group.querySelector('input');
+        const textareaEl = group.querySelector('textarea.replacement-textarea');
+
         if (labelEl && cfg.label)       labelEl.textContent = cfg.label;
         if (inputEl && cfg.placeholder) inputEl.placeholder = cfg.placeholder;
+        if (textareaEl && cfg.placeholder) textareaEl.placeholder = cfg.placeholder;
+
       } else {
         group.style.display = 'none';
       }
     });
   }
 
-  // expose
   root.PromptGen = root.PromptGen || {};
   root.PromptGen.applyModeStyling = applyModeStyling;
 })(window);
 
 /* expanding input + full-width active group */
+/* textarea replaces input while editing */
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("#prompt-form");
   if (!form) return;
 
   const inputs = form.querySelectorAll("input[type='text']");
 
-  inputs.forEach(el => {
-    el.classList.add("expanding-input");
+  function createReplacementTextarea(inputEl) {
+    const ta = document.createElement("textarea");
+    ta.className = "replacement-textarea expanding-input";
+    ta.placeholder = inputEl.placeholder || "";
+    ta.title = inputEl.title || "";
+    ta.rows = 5;
+    ta.style.display = "none";
 
-    el.addEventListener("focus", () => {
-      // Collapse all form groups
-      form.querySelectorAll(".form-group")
-        .forEach(g => g.classList.remove("expanded-group"));
+    inputEl.insertAdjacentElement("afterend", ta);
+    return ta;
+  }
 
-      // Expand this form-group + input
-      const group = el.closest(".form-group");
+  inputs.forEach(input => {
+    const group = input.closest(".form-group");
+    input.classList.add("expanding-input");
+
+    const textarea = createReplacementTextarea(input);
+
+    /* keep textarea synced with input */
+    textarea.value = input.value;
+
+    textarea.addEventListener("input", () => {
+      input.value = textarea.value;
+    });
+    
+    input.addEventListener("focus", () => {
+      // collapse all
+      form.querySelectorAll(".form-group").forEach(g => g.classList.remove("expanded-group"));
+
+      // expand this group
       if (group) group.classList.add("expanded-group");
+      input.classList.add("expanded");
 
-      el.classList.add("expanded");
+      // show textarea instead of input
+      textarea.value = input.value;
+      textarea.style.display = "";
+      textarea.classList.add("editing", "expanded");
+      input.style.display = "none";
+
+      // focus textarea
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
     });
 
-    el.addEventListener("blur", () => {
-      el.classList.remove("expanded");
+    textarea.addEventListener("blur", () => {
+      // copy back
+      input.value = textarea.value;
 
-      // Wait a bit so CSS transitions feel natural
+      textarea.classList.remove("editing", "expanded");
+      textarea.style.display = "none";
+      input.style.display = "";
+      input.classList.remove("expanded");
+
       setTimeout(() => {
-        const group = el.closest(".form-group");
         if (group) group.classList.remove("expanded-group");
       }, 150);
     });
+
+    const mo = new MutationObserver(() => {
+      if (document.activeElement !== textarea) {
+        textarea.value = input.value || "";
+      }
+    });
+    mo.observe(input, { attributes: ["value"] });
+
+    setInterval(() => {
+      if (document.activeElement !== textarea && textarea.value !== input.value) {
+        textarea.value = input.value;
+      }
+    }, 800);
   });
 });
