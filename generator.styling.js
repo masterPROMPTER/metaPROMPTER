@@ -72,3 +72,37 @@
   root.PromptGen = root.PromptGen || {};
   root.PromptGen.applyModeStyling = applyModeStyling;
 })(window);
+
+/* expanding input + full-width active group */
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("#prompt-form");
+  if (!form) return;
+
+  const inputs = form.querySelectorAll("input[type='text']");
+
+  inputs.forEach(el => {
+    el.classList.add("expanding-input");
+
+    el.addEventListener("focus", () => {
+      // Collapse all form groups
+      form.querySelectorAll(".form-group")
+        .forEach(g => g.classList.remove("expanded-group"));
+
+      // Expand this form-group + input
+      const group = el.closest(".form-group");
+      if (group) group.classList.add("expanded-group");
+
+      el.classList.add("expanded");
+    });
+
+    el.addEventListener("blur", () => {
+      el.classList.remove("expanded");
+
+      // Wait a bit so CSS transitions feel natural
+      setTimeout(() => {
+        const group = el.closest(".form-group");
+        if (group) group.classList.remove("expanded-group");
+      }, 150);
+    });
+  });
+});
