@@ -92,26 +92,43 @@
   min-height: 2.5rem;
 }
 
-/* Expanding Input (full-width group) */
+/* Expanding inputs (full-width group); textarea replaces input while editing */
 
+/* Replacement textarea baseline */
+#prompt-generator textarea.replacement-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font: inherit;
+  line-height: 1.4;
+  transition: height 0.20s ease, padding 0.20s ease;
+  white-space: pre-wrap;   
+  overflow-x: hidden;      
+  overflow-y: auto;        
+  min-height: 120px;       
+  max-height: 400px;
+  display: none;           
+}
+
+/* visible-only while editing */
+#prompt-generator textarea.replacement-textarea.editing {
+  display: block;
+}
+
+/* hide the underlying input visually; keep it in DOM for JS + submission */
+#prompt-generator .form-group.editing input[type="text"] {
+  display: none;
+}
+
+/* expanded group spans both grid columns */
 #prompt-generator #prompt-form .form-group.expanded-group {
   grid-column: 1 / -1 !important;
 }
 
-/* Input: default (collapsed) */
+/* shared class for sizing */
 #prompt-generator .expanding-input {
-  transition: height 0.25s ease, padding 0.25s ease;
-  min-height: 32px;
-  height: 32px;
-  resize: none;
-  padding-top: 0.55rem;
-  padding-bottom: 0.55rem;
-}
-
-/* Input: expanded (≈5 rows) */
-#prompt-generator .expanding-input.expanded {
-  height: 150px !important;
-  min-height: 150px !important;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
