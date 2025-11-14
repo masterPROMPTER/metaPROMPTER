@@ -92,3 +92,26 @@
   min-height: 2.5rem;
 }
 
+/* Expanding Input (full-width group) */
+
+#prompt-generator #prompt-form .form-group.expanded-group {
+  grid-column: 1 / -1 !important;
+}
+
+/* Input: default (collapsed) */
+#prompt-generator .expanding-input {
+  transition: height 0.25s ease, padding 0.25s ease;
+  min-height: 32px;
+  height: 32px;
+  resize: none;
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
+/* Input: expanded (≈5 rows) */
+#prompt-generator .expanding-input.expanded {
+  height: 150px !important;
+  min-height: 150px !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
