@@ -19,7 +19,7 @@ if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(32)); }
 
       <div class="form-group" data-fields="prompt-subject">
         <label for="prompt-subject" title="Subject / Character">Subject</label>
-        <input id="prompt-subject" name="prompt-subject" type="text" placeholder="e.g. futuristic city skyline" required aria-required="true" />
+        <input id="prompt-subject" class="expanding-input" name="prompt-subject" type="text" placeholder="e.g. futuristic city skyline" required aria-required="true" />
       </div>
 
       <div class="form-group" data-fields="prompt-scene">
