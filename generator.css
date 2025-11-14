@@ -5,6 +5,9 @@
   font-family: sans-serif;
 }
 
+/* -------------------------------
+   MODE SELECTOR
+--------------------------------*/
 #prompt-generator .input-mode-selector {
   display: flex;
   flex-wrap: wrap;
@@ -19,7 +22,6 @@
   font-weight: 700;
   color: #0d6efd;
   padding: 0 0.5rem;
-  font-size: 0.95rem;
 }
 #prompt-generator .input-mode-selector label {
   display: flex;
@@ -29,12 +31,16 @@
   cursor: pointer;
 }
 
+/* -------------------------------
+   FORM WRAPPER
+--------------------------------*/
 #prompt-generator .form-wrapper {
   padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fafafa;
 }
+
 #prompt-generator #prompt-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -44,28 +50,46 @@
   #prompt-generator #prompt-form { grid-template-columns: 1fr; }
 }
 
-#prompt-generator .form-group { display: flex; flex-direction: column; }
-#prompt-generator label { font-weight: 600; margin-bottom: 0.35rem; }
+#prompt-generator .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+#prompt-generator label {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 1rem;
+}
+
+/* -------------------------------
+   INPUTS (VISUAL MATCH w/ .t_area1)
+--------------------------------*/
 #prompt-generator input[type="text"] {
   padding: 0.55rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #ddd;            /* unified */
+  border-radius: 8px;                /* unified */
+  background: #fff;                  /* unified */
   width: 100%;
   box-sizing: border-box;
   font: inherit;
-  line-height: 1.2;
+  font-size: 1rem;
+  line-height: 1.3;
 }
+
 #prompt-generator input[type="text"]:focus {
   outline: none;
   border-color: #0d6efd;
   box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
 }
 
+/* -------------------------------
+   SUBMIT BUTTON
+--------------------------------*/
 #prompt-generator #generate-prompt-btn {
   grid-column: 1 / -1;
   padding: 0.7rem 1.2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   background: #0d6efd;
   color: #fff;
   font-size: 1rem;
@@ -73,62 +97,81 @@
   cursor: pointer;
   transition: background-color 0.18s, transform 0.02s;
 }
-#prompt-generator #generate-prompt-btn:hover { background: #0b5ed7; }
-#prompt-generator #generate-prompt-btn:active { transform: translateY(1px); }
+#prompt-generator #generate-prompt-btn:hover {
+  background: #0b5ed7;
+}
+#prompt-generator #generate-prompt-btn:active {
+  transform: translateY(1px);
+}
 #prompt-generator #generate-prompt-btn:focus-visible {
   outline: 2px solid #0d6efd;
   outline-offset: 2px;
 }
 
+/* -------------------------------
+   PROMPT OUTPUT
+--------------------------------*/
 #prompt-generator #prompt-output {
   margin-top: 0.5rem;
   padding: 1rem;
   background: #f5f5f5;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 8px;
   white-space: pre-wrap;
   word-break: break-word;
   grid-column: 1 / -1;
   min-height: 2.5rem;
 }
 
-/* Expanding inputs (full-width group); textarea replaces input while editing */
+/* -------------------------------
+   EXPANDING INPUT → TEXTAREA MODE
+--------------------------------*/
 
-/* Replacement textarea baseline */
-#prompt-generator textarea.replacement-textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.55rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font: inherit;
-  line-height: 1.4;
-  transition: height 0.20s ease, padding 0.20s ease;
-  white-space: pre-wrap;   
-  overflow-x: hidden;      
-  overflow-y: auto;        
-  min-height: 120px;       
-  max-height: 400px;
-  display: none;           
-}
-
-/* visible-only while editing */
-#prompt-generator textarea.replacement-textarea.editing {
-  display: block;
-}
-
-/* hide the underlying input visually; keep it in DOM for JS + submission */
-#prompt-generator .form-group.editing input[type="text"] {
-  display: none;
-}
-
-/* expanded group spans both grid columns */
+/* full-width group when active */
 #prompt-generator #prompt-form .form-group.expanded-group {
   grid-column: 1 / -1 !important;
 }
 
-/* shared class for sizing */
+/* placeholder for JS */
 #prompt-generator .expanding-input {
   width: 100%;
   box-sizing: border-box;
+}
+
+/* -------------------------------
+   REPLACEMENT TEXTAREA (styling)
+   Matches `.t_area1`
+--------------------------------*/
+#prompt-generator textarea.replacement-textarea {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 0.55rem 0.6rem;       /* consistent w/ inputs */
+  border: 1px solid #ddd;        /* match t_area1 */
+  border-radius: 8px;            /* match t_area1 */
+  background: #fff;              /* match t_area1 */
+  font: inherit;                 /* inherit baseline font-family */
+  font-size: 1rem;               /* same as inputs */
+  line-height: 1.4;
+
+  white-space: pre-wrap;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  min-height: 80px;              /* match t_area1 */
+  max-height: 400px;
+
+  resize: vertical;
+
+  display: none;                 /* shown only during edit */
+  transition: height 0.2s ease, padding 0.2s ease;
+}
+
+#prompt-generator textarea.replacement-textarea.editing {
+  display: block;
+}
+
+/* hide original input while editing */
+#prompt-generator .form-group.editing input[type="text"] {
+  display: none;
 }
