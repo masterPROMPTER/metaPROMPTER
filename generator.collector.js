@@ -37,8 +37,6 @@
       return "subject";
     }
 
-    // --- Remaining roles ---
-
     // Negative constraints
     if (/\b(negative|avoid|exclude|ban|without|no\s+|forbid|disallow)\b/.test(s)) {
       return "negative";
@@ -69,7 +67,7 @@
       return "timing";
     }
 
-    // Render / Output (resolution, aspect ratio, quality) — expanded: 4k/8k/1080p/2160p
+    // Render / Output (resolution, aspect ratio, quality) — expanded: 1080p/720p
     if (/\b(resolution|quality|aspect\s*ratio|\bar\b(?!t\b)|output|codec|bitrate|bit\s*rate|(?:4k|8k|1080p|2160p))\b/.test(s)) {
       return "render";
     }
@@ -197,6 +195,68 @@
     return mount;
   }
 
+  // ------------------------------------------------------------
+  // OUTPUT .JSON
+  // ------------------------------------------------------------
+
+  function mapToCanonicalBuckets(fields) {
+    const bucket = {
+      subject: [],
+      scene: [],
+      style: [],
+      motion: [],
+      atmosphere: [],
+      audio: [],
+      frame: [],
+      message: []
+    };
+
+    fields.forEach(f => {
+      const val = Array.isArray(f.value)
+        ? f.value.join(", ")
+        : String(f.value || "").trim();
+
+      if (!val) return;
+
+      switch (f.role) {
+        case "subject":
+          bucket.subject.push(val);
+          break;
+        case "environment":
+          bucket.scene.push(val);
+          break;
+        case "style":
+          bucket.style.push(val);
+          break;
+        case "action":
+        case "camera":
+          bucket.motion.push(val);
+          break;
+        case "lighting":
+        case "mood":
+          bucket.atmosphere.push(val);
+          break;
+        case "audio":
+          bucket.audio.push(val);
+          break;
+        case "render":
+        case "timing":
+          bucket.frame.push(val);
+          break;
+        case "negative":
+        case "misc":
+        default:
+          bucket.message.push(val);
+      }
+    });
+
+    return Object.fromEntries(
+      Object.entries(bucket).map(([k, arr]) => [k, arr.join(", ")])
+    );
+  }
+
+  // ------------------------------------------------------------
+
   function updateOutputs(form) {
     const mount = ensurePreviewMount();
     if (!mount) return;
@@ -215,24 +275,31 @@
     if (sectionedEl) sectionedEl.value = sectioned;
     if (flatEl) flatEl.value = flat;
 
+    // NEW canonical output
+    const canonical = mapToCanonicalBuckets(fields);
+
     const payload = {
-      sora_prompt_sections: fields.map(f => ({
-        id: f.id, name: f.name, label: f.label, type: f.type, value: f.value, checked: f.checked, role: f.role
-      })),
-      concatenated_prompt_sectioned: sectioned,
-      concatenated_prompt_flat: flat,
-      meta: {
-        generated_at: new Date().toISOString(),
-        source: "generator.collector.js",
-        note: "Use *_sectioned for readability & role hints; *_flat for single-line transport."
-      }
+      instruction:
+        "You are a video-prompt compiler. Use the data in the 'input' object to generate ONE concise, production-ready, single-line text-to-video prompt using ONLY the provided fields: subject, scene, style, motion, atmosphere, audio, frame, message. Do not add markdown, labels, categories, or commentary. Make the prompt vivid and cinematic but not verbose. Use natural order: Subject → Scene → Style → Motion → Atmosphere → Audio → Frame → Message. After the prompt, output a SECOND line containing a short random inspirational quote in quotation marks, followed by an em dash and the author's name (or 'Anonymous').",
+
+      input: canonical
     };
 
-    const { concatenated_prompt_sectioned, concatenated_prompt_flat, ...displayPayload } = payload;
-    const toDisplay = (toggle && toggle.checked) ? payload : displayPayload;
+    const toDisplay = toggle && toggle.checked
+      ? {
+          ...payload,
+          _debug: {
+            sectioned,
+            flat,
+            raw_fields: fields,
+            generated_at: new Date().toISOString(),
+            source: "generator.collector.js"
+          }
+        }
+      : payload;
+
     if (jsonEl) jsonEl.value = JSON.stringify(toDisplay, null, 2);
 
-    // Expose
     window.PromptGen = window.PromptGen || {};
     window.PromptGen.getCollectedPayload = () => ({ ...payload });
   }
