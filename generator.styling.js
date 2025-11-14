@@ -129,8 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     textarea.addEventListener("blur", () => {
-      // copy back
-      input.value = textarea.value;
+      // copy back, convert line breaks to spaces for the input
+      input.value = textarea.value.replace(/\s*\n\s*/g, " ").trim();
 
       textarea.classList.remove("editing", "expanded");
       textarea.style.display = "none";
